@@ -1,0 +1,23 @@
+{
+  "name": "webpacktutorial",
+  "version": "0.0.1",
+  "description": "Following tutorial https://blog.madewithenvy.com/getting-started-with-webpack-2-ed2b86c68783#.qux99et2b",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cintiamh/Webpack2Tutorial.git"
+  },
+  "author": "Cintia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cintiamh/Webpack2Tutorial/issues"
+  },
+  "homepage": "https://github.com/cintiamh/Webpack2Tutorial#readme",
+  "devDependencies": {
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1"
+  }
+}
