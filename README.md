@@ -15,3 +15,6 @@ Install webpack and webpack-dev-server:
 ```
 $ npm i webpack webpack-dev-server --save-dev
 ```
+
+Create a .gitignore file:
+[.gitignore](.gitignore)
