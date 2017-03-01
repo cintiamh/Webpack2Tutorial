@@ -98,3 +98,76 @@ module.exports = {
 ```
 
 This will be bundled as 3 files: `dist/home.bundle.js`, `dist/events.bundle.js`, and `dist/contact.bundle.js`.
+
+#### Automatic vendor bundling
+
+Sometimes when you create separated bundles, you might have repeated code among those files, usually vendor libraries.
+Webpack let you make a separated bundle for the vendor code with CommonsChunk plugin.
+
+```javascript
+module.exports = {
+  //...
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'commons',
+      filename: 'commons.js',
+      minChunks: 2,
+    }),
+  ],
+  //...
+}
+```
+
+Now, across your `output` files, if you have any modules that get loaded 2 or more times, it will bundle that into a `commons.js` file.
+
+#### Manual vendor bundling
+
+You can also take a more manual approach:
+
+```javascript
+module.exports = {
+  entry: {
+    index: './index.js',
+    vendor: ['react', 'react-dom', 'rxjs'],
+  },
+}
+```
+
+In this, you're explicitly telling webpack to export a `vendor` bundle containing your `react` related node modules, rather than relying on CommonsChunkPlugin to do its thing automatically.
+
+## Development
+
+To get the development server running, just add a `devServer` object to `webpack.config.js`:
+
+```javascript
+module.exports = {
+  context: path.resolve(__dirname, './src'),
+  entry: {
+    app: './app.js',
+  },
+  output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, './dist/assets'),
+    publicPath: '/assets',                          // New
+  },
+  devServer: {
+    contentBase: path.resolve(__dirname, './src'),  // New
+  },
+};
+```
+
+Now make a `src/index.html` file with:
+
+```html
+<script src="/assets/app.bundle.js"></script>
+```
+
+And run the webpack server:
+
+```
+$ ./node_modules/.bin/webpack-dev-server
+```
+
+Your server is now running at `localhost:8080`.
+
+## Globally-accessible methods
