@@ -171,3 +171,193 @@ $ ./node_modules/.bin/webpack-dev-server
 Your server is now running at `localhost:8080`.
 
 ## Globally-accessible methods
+
+If you want to access a function from a global namespace, simply set `output.library` within `webpack.config.js` and it will attach your bundle to a `window.myClassName` instance.
+
+```javascript
+module.exports = {
+  output: {
+    library: 'myClassName',
+  }
+};
+```
+
+## Loaders
+
+We can work with virtually any file type, as long as we pass it into JavaScript with Loaders.
+
+On NPM they are usually named `*-loader` such as `sass-loader` or `babel-loader`.
+
+### Babel + ES6
+
+First install:
+
+```
+$ npm i babel-loader babel-core babel-preset-es2015 --save-dev
+```
+
+Now include them into webpack.config.js file:
+
+```javascript
+module.exports = {
+  // …
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: [/node_modules/],
+        use: [{
+          loader: 'babel-loader',
+          options: { presets: ['es2015'] }
+        }],
+      },
+    ],
+  },
+  // …
+};
+```
+
+Webpack relies on regex tests to give you complete control.
+
+You can use `include` as well to make the opposite exception.
+
+### CSS + Style Loader
+
+We can import the css from the js file:
+
+```javascript
+import styles from './assets/stylesheets/application.css'
+```
+
+We'll get the error:
+`You may need an appropriate loader to handle this file type`.
+
+Now we have to install and setup a css loader:
+
+```
+$ npm i css-loader style-loader --save-dev
+```
+
+And the webpack.config.js:
+
+```javascript
+module.exports = {
+  // …
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
+};
+```
+
+Note that the loaders are processed in reverse array order. So `css-loader` will run before `style-loader`.
+
+`css-loader` bundles the css into your javascript and `style-loader` manually writes your styles to the `<head>`.
+
+### CSS + Node modules
+
+```
+@import "~normalize.css";
+```
+
+### CSS Modules
+
+CSS Modules scopes your CSS classes to the JavaScript file that loaded it.
+You'll need `css-loader` for this.
+
+```javascript
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: { modules: true }
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
+You can actually drop the `~` when importing Node Modules with CSS Modules enabled.
+
+If you are getting `Can't find ...` errors, try adding a `resolve` to your webpack.config.js:
+
+```JavaScript
+module.exports = {
+  resolve: {
+    modules: [path.resolve(__dirname, './src'), 'node_modules']
+  },
+};
+```
+
+### Sass
+
+```
+$ npm i --save-dev sass-loader node-sass
+```
+
+webpack.config.js
+
+```JavaScript
+module.exports = {
+  // …
+  module: {
+    rules: [
+      {
+        test: /\.(sass|scss)$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'sass-loader',
+        ]
+      }
+      // …
+    ],
+  },
+};
+```
+
+### CSS bundled separately
+
+install plugin:
+
+```
+$ npm install --save-dev extract-text-webpack-plugin
+```
+
+And in your webpack.config.js:
+
+```javascript
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: "css-loader"
+        })
+      }
+    ]
+  },
+  plugins: [
+    new ExtractTextPlugin("styles.css"),
+  ]
+}
+```
+
+### HTML
+
+As you can expect, there is a html-loader: https://github.com/webpack-contrib/html-loader
